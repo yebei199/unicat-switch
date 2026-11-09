@@ -30,6 +30,8 @@ body {
     0 0 48px 6px rgb(255 166 77 / calc(0.38 * var(--glow))),
     inset 0 2px 1px rgb(255 255 255 / 0.5),
     inset 0 -3px 6px rgb(0 0 0 / 0.15);
+  touch-action: pan-y;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
