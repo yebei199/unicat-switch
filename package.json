@@ -1,0 +1,14 @@
+{
+  "name": "unicat-switch",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot ./index.html",
+    "build": "bun build ./index.html --outdir dist --minify",
+    "art": "bun scripts/art.ts",
+    "check": "tsc && biome check ."
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4"
+  }
+}

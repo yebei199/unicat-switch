@@ -1,0 +1,46 @@
+:root {
+  --page: #ece5d4;
+  --hi: #fdfaf3;
+  --lo: #d8cfbc;
+  --glow: 0;
+  --drop: 1;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  background: var(--page);
+}
+
+.switch {
+  width: min(86vw, 540px);
+  padding: clamp(6px, 1.9vw, 12px);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--hi), var(--lo));
+  box-shadow:
+    0 24px 44px -20px rgb(70 52 25 / calc(0.5 * var(--drop))),
+    0 0 48px 6px rgb(255 166 77 / calc(0.38 * var(--glow))),
+    inset 0 2px 1px rgb(255 255 255 / 0.5),
+    inset 0 -3px 6px rgb(0 0 0 / 0.15);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.switch:focus-visible {
+  outline: 2px solid #f5a54a;
+  outline-offset: 6px;
+}
+
+.switch canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 224 / 96;
+  border-radius: 999px;
+}
