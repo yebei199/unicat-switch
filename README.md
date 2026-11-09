@@ -1,5 +1,7 @@
 ![unicat-switch 演示：点击入夜、拖回黄昏、松手回到白天](docs/demo.gif)
 
+[在线试玩](https://yebei199.github.io/unicat-switch/)：点一下，或者按住玻璃球慢慢拖。
+
 # unicat-switch
 
 一个日夜切换开关：胶囊轨道里是一幅像素画小院，滑块是一颗会折射背后画面的玻璃球。点一下（或拖动），太阳落下、天色经过黄昏转成夜晚，窗户亮灯，奶牛猫从树下走回门口坐着；再点一下，天亮，猫走回树下。
@@ -38,6 +40,4 @@ bun run record   # 重录 docs/demo.gif（逐帧推进 + 截图，需要 Chrome 
 
 MIT，见 `LICENSE`。代码和 `art/` 里的图都在内。
 
-## 灵感
-
-效果来自 [@Lattice_Node 的一段演示视频](https://x.com/Lattice_Node/status/2119392949813555224)；代码和画面均为独立实现。
+<sub>效果来自 [@Lattice_Node 的一段演示视频](https://x.com/Lattice_Node/status/2119392949813555224)，代码和画面均为独立实现。</sub>
