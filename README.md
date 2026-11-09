@@ -1,3 +1,5 @@
+![unicat-switch 演示：点击入夜、拖回黄昏、松手回到白天](docs/demo.gif)
+
 # unicat-switch
 
 一个日夜切换开关：胶囊轨道里是一幅像素画小院，滑块是一颗会折射背后画面的玻璃球。点一下（或拖动），太阳落下、天色经过黄昏转成夜晚，窗户亮灯，奶牛猫从树下走回门口坐着；再点一下，天亮，猫走回树下。
@@ -5,10 +7,11 @@
 ## 运行
 
 ```sh
-bun install      # 只有 @types/bun 这一个开发依赖
+bun install      # 开发依赖只有 @types/bun 和录 GIF 用的 playwright-core
 bun run dev      # 开发服务器，默认 http://localhost:3000
 bun run build    # 静态产物进 dist/
 bun run check    # tsc + biome
+bun run record   # 重录 docs/demo.gif（逐帧推进 + 截图，需要 Chrome 和 ffmpeg）
 ```
 
 ## 结构

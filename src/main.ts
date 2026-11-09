@@ -169,6 +169,16 @@ async function main(): Promise<void> {
   const [scene, sit, walk] = await Promise.all([pixels(sceneUrl), pixels(sitUrl), pixels(walkUrl)]);
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const view = new Switch(button, new Glass(canvas), new Scene({ scene, sit, walk }), calm);
+  if (new URLSearchParams(location.search).has('capture')) {
+    // 录制模式：不跑 rAF，由 scripts/record.ts 逐帧推进，帧率与机器快慢无关。
+    let time = 0;
+    const frame = (dt: number): void => {
+      time += dt;
+      view.frame(dt, time);
+    };
+    Object.assign(window, { unicat: { frame } });
+    return;
+  }
   let last = performance.now();
   const tick = (now: number): void => {
     view.frame(Math.min((now - last) / 1000, 0.05), now / 1000);

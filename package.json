@@ -6,9 +6,11 @@
     "dev": "bun --hot ./index.html",
     "build": "bun build ./index.html --outdir dist --minify",
     "art": "bun scripts/art.ts",
+    "record": "bun scripts/record.ts",
     "check": "tsc && biome check ."
   },
   "devDependencies": {
-    "@types/bun": "^1.4.4"
+    "@types/bun": "^1.4.4",
+    "playwright-core": "^1.65.0"
   }
 }
