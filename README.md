@@ -1,43 +1,48 @@
-![unicat-switch 演示：点击入夜、拖回黄昏、松手回到白天](docs/demo.gif)
+![unicat-switch demo: click into night, drag back to dusk, release into day](docs/demo.gif)
 
-[在线试玩](https://yebei199.github.io/unicat-switch/)：点一下，或者按住玻璃球慢慢拖。
+[Try it live](https://yebei199.github.io/unicat-switch/) — click it, or grab the glass ball and drag it slowly.
 
 # unicat-switch
 
-一个日夜切换开关：胶囊轨道里是一幅像素画小院，滑块是一颗会折射背后画面的玻璃球。点一下（或拖动），太阳落下、天色经过黄昏转成夜晚，窗户亮灯，奶牛猫从树下走回门口坐着；再点一下，天亮，猫走回树下。
+A day/night toggle. The pill-shaped track holds a pixel-art yard, and the thumb is a glass ball that refracts the scene
+behind it. Click (or drag) and the sun sets, the sky passes through dusk into night, the window lights up, and the
+tuxedo cat walks from the tree back to the doorstep. Click again: morning comes and the cat walks back to the tree.
 
-## 运行
+## Run
 
 ```sh
-bun install      # 开发依赖只有 @types/bun 和录 GIF 用的 playwright-core
-bun run dev      # 开发服务器，默认 http://localhost:3000
-bun run build    # 静态产物进 dist/
+bun install      # dev dependencies are only @types/bun and playwright-core (for recording the GIF)
+bun run dev      # dev server, http://localhost:3000 by default
+bun run build    # static build into dist/
 bun run check    # tsc + biome
-bun run record   # 重录 docs/demo.gif（逐帧推进 + 截图，需要 Chrome 和 ffmpeg）
+bun run record   # re-record docs/demo.gif (frame-stepped screenshots; needs Chrome and ffmpeg)
 ```
 
-## 结构
+## How it works
 
-| 层 | 文件 | 做什么 |
+| Layer | Files | What it does |
 |---|---|---|
-| 场景 | `src/scene.ts`、`src/sky.ts` | 在 224×96 的浮点画布上合成：天空渐变、日月星云、按时间重新打光的前景、窗光、猫 |
-| 抖动 | `src/dither.ts` | 4×4 Bayer 有序抖动，在 gamma 空间量化：天空的网点色带和光晕的颗粒都来自这一步 |
-| 玻璃 | `src/glass.ts` | WebGL：最近邻放大场景，胶囊遮罩和内阴影，球内按 `asin(r)` 做球面折射，加色散、菲涅尔、高光 |
-| 运动 | `src/main.ts`、`src/spring.ts` | 欠阻尼弹簧驱动球（会冲过头），慢一些的临界阻尼弹簧驱动天色；按速度挤压拉伸，悬停时球偏向光标，按下时缩小。可以慢慢拖，天色随位置连续变化；松手时快甩按方向、慢放按离哪边近 |
-| 角色 | `src/cat.ts` | 猫在树下与门口之间走动的状态 |
+| Scene | `src/scene.ts`, `src/sky.ts` | Composites a 224×96 float canvas: sky gradient, sun, moon, stars, clouds, the relit foreground, lamplight, the cat |
+| Dither | `src/dither.ts` | 4×4 Bayer ordered dithering, quantized in gamma space; the dotted sky bands and grainy glow come from here |
+| Glass | `src/glass.ts` | WebGL: nearest-neighbour upscale, pill mask and inner shadow, spherical refraction via `asin(r)` with chromatic split, fresnel and specular |
+| Motion | `src/main.ts`, `src/spring.ts` | An underdamped spring drives the ball (it overshoots), a slower critically damped one drives the sky; velocity-based squash and stretch, the ball leans toward the cursor on hover and shrinks when pressed. Drag slowly and the sky follows the ball; on release a fast flick goes by direction, otherwise to the nearer side |
+| Character | `src/cat.ts` | The cat walking between the tree and the doorstep |
 
-时间参数 `t`（0 白天 → 0.5 黄昏 → 1 夜里）是唯一的输入，天空、光照、页面底色、外框光晕都是它的函数（`src/daylight.ts`）。
+A single time parameter `t` (0 day → 0.5 dusk → 1 night) drives everything: sky, lighting, page background and the
+bezel glow are all functions of it (`src/daylight.ts`).
 
-## 素材
+## Art
 
-`art/src/` 是 Codex（`image_gen`）生成的原图，品红底，构图和猫按奶牛猫设定图出。`bun run art` 用 ImageMagick
-抠底、按面积缩小、硬化透明边并压色板，产出 `art/*.png`。猫在 18px 高时只剩色块，所以先拉对比，再映射到固定的七色猫色板。
-场景物件的坐标（窗、门、树）在 `src/layout.ts`，是对处理后的 `art/scene.png` 实测的结果；重新生成场景图后要重新量。
+`art/src/` holds the originals generated with Codex (`image_gen`) on a magenta key, with the cat drawn from our tuxedo-cat
+design sheets. `bun run art` uses ImageMagick to key out the background, area-downscale, harden the alpha edge and reduce
+the palette into `art/*.png`. At 18 px tall the cat turns to mush, so contrast is boosted first and colors are mapped to
+a fixed seven-color cat palette. Object coordinates (window, door, tree) in `src/layout.ts` were measured on the
+processed `art/scene.png`; re-measure them after regenerating the scene.
 
-`prefers-reduced-motion` 打开时弹簧改为临界阻尼，不回弹。
+With `prefers-reduced-motion`, the springs become critically damped and stop bouncing.
 
-## 许可
+## License
 
-MIT，见 `LICENSE`。代码和 `art/` 里的图都在内。
+MIT, see `LICENSE`. Covers both the code and the images in `art/`.
 
-<sub>效果来自 [@Lattice_Node 的一段演示视频](https://x.com/Lattice_Node/status/2119392949813555224)，代码和画面均为独立实现。</sub>
+<sub>Inspired by [a demo video by @Lattice_Node](https://x.com/Lattice_Node/status/2119392949813555224); code and art are independent work.</sub>
