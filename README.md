@@ -41,6 +41,23 @@ processed `art/scene.png`; re-measure them after regenerating the scene.
 
 With `prefers-reduced-motion`, the springs become critically damped and stop bouncing.
 
+## Slint
+
+`slint/` is the same switch as a Rust crate, `unicat-switch-slint`, for [Slint](https://slint.dev) apps. The scene,
+dither and glass are ported file by file and computed on the CPU into a pixel buffer, so it runs on every Slint
+renderer (software, FemtoVG, Skia) without shaders. Against the web version it differs by under 0.02/255 mean RGB in
+the day, dusk and night states (`slint/compare/`).
+
+```sh
+cd slint
+cargo run --example demo   # a window with the switch
+cargo test                 # unit tests and a headless component test
+```
+
+The frame timer runs only while a spring is moving, so an idle switch costs no CPU. One consequence: unlike the web
+version, the clouds and stars don't drift while it sits still. A frame at 270 px wide takes about 4 ms on one core at
+2× scale. The crate embeds `../art`, so use it as a git or path dependency.
+
 ## License
 
 MIT, see `LICENSE`. Covers both the code and the images in `art/`.
