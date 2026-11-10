@@ -1,0 +1,28 @@
+// A window holding one switch, for Rust callers that do not have their own .slint (the demo,
+// the tests). Apps with a .slint UI import `UnicatSwitch` from unicat-switch.slint instead.
+
+import { UnicatSwitch, SwitchFrame, SwitchInput, SwitchCommit } from "unicat-switch.slint";
+
+export { SwitchFrame, SwitchInput, SwitchCommit }
+
+export component UnicatSwitchWindow inherits Window {
+    in-out property <bool> night <=> switch.night;
+    in property <string> label <=> switch.label;
+    callback toggled <=> switch.toggled;
+    in property <int> tick <=> switch.tick;
+    pure callback render <=> switch.render;
+    callback input <=> switch.input;
+
+    title: "unicat-switch";
+    // style.css --page, following the sky.
+    background: #0a0d1d.mix(#ece5d4, switch.phase);
+    preferred-width: 326px;
+    preferred-height: 200px;
+
+    switch := UnicatSwitch {
+        x: 28px;
+        y: 28px;
+        width: root.width - 56px;
+        height: root.height - 56px;
+    }
+}

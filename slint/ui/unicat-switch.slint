@@ -1,0 +1,135 @@
+// The day/night switch. Pixels come from the Rust driver (`unicat_switch_slint::Driver`);
+// this file lays out the bezel, forwards pointer input and owns the checked state.
+//
+// Embedding in your own .slint: bind `tick`, `render` and `input` to a Driver (see lib.rs).
+
+export enum SwitchInput { down, move, up, cancel, leave }
+
+// What a pointer release asks for: nothing, flip `night`, or set it (a drag landed).
+export enum SwitchCommit { none, toggle, day, night }
+
+export struct SwitchFrame {
+    image: image,
+    // Sky phase: 0 day, 0.5 dusk, 1 night.
+    phase: float,
+    // Night light level: the bezel glow.
+    glow: float,
+}
+
+export component UnicatSwitch {
+    in-out property <bool> night;
+    in property <string> label: "Night mode";
+    callback toggled(night: bool);
+    // Sky phase (0 day → 0.5 dusk → 1 night), for tinting the page around the switch.
+    out property <float> phase: frame.phase;
+
+    // Driver wiring.
+    in property <int> tick;
+    // Canvas size and bezel padding in physical pixels; the frame image covers the whole bezel.
+    pure callback render(width: int, height: int, pad: int, scale: float, night: bool, tick: int) -> SwitchFrame;
+    callback input(kind: SwitchInput, x: length) -> SwitchCommit;
+
+    // Pill proportions from the web version: canvas 224:96 (layout.ts) inside a bezel whose
+    // padding is 1/45 of its width (style.css: 12px on 540px). Outer height/width = 143/315.
+    // Every edge is snapped to whole physical pixels so the canvas maps 1:1 onto the buffer.
+    property <length> pill-w: min(root.width, root.height * 315 / 143);
+    property <length> pad: max(1phx, round(pill-w / 45 / 1phx) * 1phx);
+    property <length> canvas-w: round((pill-w - 2 * pad) / 1phx) * 1phx;
+    property <length> canvas-h: round(canvas-w * 96 / 224 / 1phx) * 1phx;
+    property <SwitchFrame> frame: root.render(canvas-w / 1phx, canvas-h / 1phx, pad / 1phx, 1px / 1phx, root.night, root.tick);
+
+    preferred-width: 270px;
+    preferred-height: self.preferred-width * 143 / 315;
+    min-width: 45px;
+    min-height: 21px;
+
+    accessible-role: checkbox;
+    accessible-checkable: true;
+    accessible-checked: root.night;
+    accessible-label: root.label;
+    accessible-action-default => { root.flip(); }
+
+    function flip() {
+        root.night = !root.night;
+        root.toggled(root.night);
+    }
+
+    function land(commit: SwitchCommit) {
+        if commit == SwitchCommit.toggle || (commit != SwitchCommit.none && (commit == SwitchCommit.night) != root.night) {
+            root.flip();
+        }
+    }
+
+    bezel := Rectangle {
+        width: canvas-w + 2 * pad;
+        height: canvas-h + 2 * pad;
+        x: round((root.width - self.width) / 2 / 1phx) * 1phx;
+        y: round((root.height - self.height) / 2 / 1phx) * 1phx;
+        border-radius: self.height / 2;
+        // style.css box-shadow: the warm glow under the switch at night ...
+        drop-shadow-blur: pill-w * 48 / 540;
+        drop-shadow-color: #ffa64d.with-alpha(0.38 * frame.glow);
+
+        // ... and the soft drop shadow by day. (Skia and FemtoVG draw these; the software
+        // renderer has no drop shadows. The bezel itself is in the frame image.)
+        Rectangle {
+            border-radius: parent.border-radius;
+            drop-shadow-offset-y: pill-w * 14 / 540;
+            drop-shadow-blur: pill-w * 24 / 540;
+            drop-shadow-color: rgba(70, 52, 25, 0.35 * (1 - frame.glow));
+        }
+
+        Image {
+            width: parent.width;
+            height: parent.height;
+            source: frame.image;
+            image-fit: fill;
+            image-rendering: pixelated;
+        }
+
+        touch := TouchArea {
+            mouse-cursor: pointer;
+            pointer-event(event) => {
+                if event.kind == PointerEventKind.move {
+                    root.input(SwitchInput.move, self.mouse-x - pad);
+                } else if event.button != PointerEventButton.left {
+                    return;
+                } else if event.kind == PointerEventKind.down {
+                    root.input(SwitchInput.down, self.mouse-x - pad);
+                } else if event.kind == PointerEventKind.up {
+                    root.land(root.input(SwitchInput.up, self.mouse-x - pad));
+                } else if event.kind == PointerEventKind.cancel {
+                    root.land(root.input(SwitchInput.cancel, self.mouse-x - pad));
+                }
+            }
+            changed has-hover => {
+                if !self.has-hover {
+                    root.input(SwitchInput.leave, 0);
+                }
+            }
+        }
+
+        // Keyboard only: with focus-on-click it would swallow the press the TouchArea needs.
+        focus := FocusScope {
+            focus-on-click: false;
+            key-pressed(event) => {
+                if event.text == " " || event.text == Key.Return {
+                    root.flip();
+                    return accept;
+                }
+                reject
+            }
+        }
+
+        // style.css :focus-visible — a TouchArea press does not take focus, only Tab does.
+        if focus.has-focus: Rectangle {
+            x: -6px - 2px;
+            y: -6px - 2px;
+            width: parent.width + 16px;
+            height: parent.height + 16px;
+            border-radius: self.height / 2;
+            border-width: 2px;
+            border-color: #f5a54a;
+        }
+    }
+}

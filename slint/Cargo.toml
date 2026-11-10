@@ -9,3 +9,10 @@ repository = "https://github.com/yebei199/unicat-switch"
 
 [dependencies]
 png = "0.18"
+slint = { version = "1.18", default-features = false, features = ["std", "compat-1-2"] }
+
+[build-dependencies]
+slint-build = "1.18"
+
+[dev-dependencies]
+slint = { version = "1.18", default-features = false, features = ["std", "compat-1-2", "renderer-software", "backend-winit"] }
