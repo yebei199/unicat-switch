@@ -1,6 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
-  "files": { "includes": ["**", "!node_modules", "!dist"] },
+  "files": { "includes": ["**", "!node_modules", "!dist", "!slint/target"] },
   "formatter": { "indentStyle": "space", "lineWidth": 120 },
   "javascript": { "formatter": { "quoteStyle": "single" } },
   "linter": {

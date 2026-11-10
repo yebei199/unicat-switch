@@ -1,0 +1,11 @@
+[package]
+name = "unicat-switch-slint"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+description = "The unicat day/night switch as a Slint component, rendered on the CPU"
+repository = "https://github.com/yebei199/unicat-switch"
+
+[dependencies]
+png = "0.18"
