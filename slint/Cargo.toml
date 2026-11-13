@@ -6,6 +6,9 @@ rust-version = "1.88"
 license = "MIT"
 description = "The unicat day/night switch as a Slint component, rendered on the CPU"
 repository = "https://github.com/yebei199/unicat-switch"
+# Lets a dependent's build script read DEP_UNICAT_SWITCH_LIBRARY_PATH instead of
+# pulling this crate in as a build-dependency (see build.rs).
+links = "unicat_switch"
 
 [dependencies]
 png = "0.18"

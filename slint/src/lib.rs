@@ -7,8 +7,9 @@
 //! - `ui/unicat-switch.slint` holds `UnicatSwitch`, the component; [`UnicatSwitchWindow`] wraps it
 //!   in a window for Rust callers without their own `.slint`, and [`attach`] wires the two.
 //!
-//! Embedding `UnicatSwitch` in an app's own `.slint`: add [`library_path`] to `slint-build`'s
-//! library paths under a name (e.g. `unicat`), `import { UnicatSwitch } from "@unicat/unicat-switch.slint"`,
+//! Embedding `UnicatSwitch` in an app's own `.slint`: add the `ui` directory to `slint-build`'s
+//! library paths under a name (e.g. `unicat`) — a build script that depends on this crate reads it
+//! from `DEP_UNICAT_SWITCH_LIBRARY_PATH`, and [`library_path`] returns it at runtime — `import { UnicatSwitch } from "@unicat/unicat-switch.slint"`,
 //! forward its `tick` property and `render`/`input` callbacks to the app's root or a global,
 //! and bind them to a [`Driver`] the same way [`attach`] does.
 
